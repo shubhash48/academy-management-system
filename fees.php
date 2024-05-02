@@ -8,9 +8,9 @@ if (!isset($_SESSION['username'])) {
     exit(); // Make sure to exit after redirect
 }
 
+// i am student
 
 $page='fees';
-
 
 include("php/dbconnect.php");
 $sname=$contact='';
