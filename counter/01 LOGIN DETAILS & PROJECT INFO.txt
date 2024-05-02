@@ -1,0 +1,14 @@
+Academy Managemet system
+
+Admin credentials
+Username: admin
+Password: admin
+
+Student credentials
+Username:smita
+Password:smita
+
+esewa test only
+eSewa ID: 9806800001/2/3/4/5
+Password: Nepal@123 
+MPIN: 1234 (for application only)
