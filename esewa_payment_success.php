@@ -1,62 +1,33 @@
 <?php
-include 'dbconnect.php';
-if( isset($_REQUEST['oid']) &&
-	isset( $_REQUEST['amt']) &&
-	isset( $_REQUEST['refId'])
-	)
-{
-	$sql = "SELECT * FROM orders WHERE invoice_no = '".$_REQUEST['oid']."'"	;
-	$result = mysqli_query( $conn, $sql);
-	if(  $result )
-	{
-
-		
-		if( mysqli_num_rows($result) == 1)
-		{
-			$order = mysqli_fetch_assoc( $result);
-			$url = "https://uat.esewa.com.np/epay/transrec";
-		
-			$data =[
-			'amt'=> $order['total'],
-			'rid'=>  $_REQUEST['refId'],
-			'pid'=>  $order['invoice_no'],
-			'scd'=> 'epay_payment'
-			];
-
-			$curl = curl_init($url);
-			curl_setopt($curl, CURLOPT_POST, true);
-			curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-			$response = curl_exec($curl);
-			$response_code = get_xml_node_value('response_code',$response  );
-
-			print_r($response_code);
-
-			if ( trim($response_code)  == 'Success')
-			{
-				$sql = "UPDATE orders SET status=1 WHERE id='".$order['id']."'";
-				mysqli_query($conn, $sql);
-				//echo 'Thank you for purchasing with us. Your payment has been successfully.';
-				header('Location: http://localhost/academymanagementsystem/success.php');
+include './php/dbconnect.php';
+if (
+	isset($_GET['id'])
+) {
+	// $data = base64_decode($_GET['data']);
+	// $data = json_decode($data, true);
+	// echo $data;
+	$sql = "SELECT * FROM student WHERE id = '" . $_GET['id'] . "'";
+	$result = mysqli_query($conn, $sql);
+	if ($result) {
+		$row = mysqli_fetch_assoc($result);
+		if ($row) {
+			$dues = $row['balance'];
+			$id = $row['id'];
+			$fees = $row['fees'];
+			$dues = $dues - $fees;
+			$sql = "UPDATE student SET balance = 0 WHERE id = $id";
+			$result = mysqli_query($conn, $sql);
+			if ($result) {
+				header('Location: http://127.0.0.1/academy-management-system/student/fees.php?success=1');
+			} else {
+				echo "server error, please contact administrator";
 			}
-	
-	
+
+		} else {
+			echo "No data found, server error, please contact the administrator";
 		}
+		// header('Location: http://localhost/academy-management-system/success.php');
+		print_r($result);
 	}
-}
 
-
-function get_xml_node_value($node, $xml) {
-    if ($xml == false) {
-        return false;
-    }
-    $found = preg_match('#<'.$node.'(?:\s+[^>]+)?>(.*?)'.
-            '</'.$node.'>#s', $xml, $matches);
-    if ($found != false) {
-        
-            return $matches[1]; 
-         
-    }	  
-
-   return false;
 }

@@ -34,6 +34,7 @@ include("counter/header.php");
     <link href="css/custom.css" rel="stylesheet" />
     <!-- GOOGLE FONTS-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    
 	
 	<script src="js/jquery-1.10.2.js"></script>
 	
@@ -68,6 +69,15 @@ include("counter/header.php");
 </head>
 <body>
 <div id="page-wrapper">
+    <?php
+
+
+    if(isset($_GET['success']))
+    {
+        echo '<script>alert("Payment successful")</script>';
+    }
+
+?>
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
@@ -146,6 +156,8 @@ include("counter/header.php");
                                 <div class="col-sm-8">
                                 <div class="pay-amount-container">
                                      <?php
+
+
                                 $username = $_SESSION['username'];
                                     $sql="SELECT * FROM student WHERE username = '$username'";
                                      $q = $conn->query($sql);
@@ -154,22 +166,40 @@ include("counter/header.php");
                                      {
                                         $dues=$r['balance'];
                                         $id=$r['id'];
+                                        $total_amount = $dues;
+                                        $secret = "8gBm/:&EnhH.1/q";
+                                        $product_code = "EPAYTEST";
+                                        // $product_code = $id;
+                                        $transaction_uuid = uniqid(); // Generate a unique transaction ID
+                                        $ss = 'total_amount=' . $total_amount . ',transaction_uuid=' . $transaction_uuid . ',product_code=' . $product_code;
+                                        // echo $ss;
+                                        $s = hash_hmac('sha256', $ss, $secret, true);
+                                        // echo base64_encode($s);
+
                                         ?>
                                        
-                                        <form action="https://uat.esewa.com.np/epay/main" method="POST">
-                                            <input value="<?php echo $dues; ?>" name="tAmt" type="hidden">
-                                            <input value="<?php echo $dues; ?>" name="amt" type="hidden">
-                                            <input value="0" name="txAmt" type="hidden">
-                                            <input value="0" name="psc" type="hidden">
-                                            <input value="0" name="pdc" type="hidden">
-                                            <input value="EPAYTEST" name="scd" type="hidden">
-                                            <input value="<?php echo $id; ?>" name="pid" type="hidden">
-                                            <input value="http://localhost/academymanagementsystem/esewa_payment_success.php" type="hidden" name="su">
-                                            <!-- <input value="http://localhost/academymanagementsystem/esewa_payment_failure.php" type="hidden" name="su"> -->
-                                            <input value="http://localhost/academymanagementsystem/student/fees.php" type="hidden" name="fu">
-                                            <input value="Pay Fee Via Esewa" type="submit">
-                                            </form>
-                                    
+                                       <body>
+ <form action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
+ <input type="text" id="amount" name="amount" value="<?php echo $dues ?>" required hidden>
+ <input type="text" id="tax_amount" name="tax_amount" value ="0" required hidden>
+ <input type="text" id="total_amount" name="total_amount" value="<?php echo $dues ?>" required hidden>
+ <input type="text" id="transaction_uuid" name="transaction_uuid" value="<?php echo $transaction_uuid ?>" required hidden>
+ <input type="text" id="product_code" name="product_code" value ="<?php echo $product_code ?>" required hidden>
+ <input type="text" id="product_service_charge" name="product_service_charge" value="0" required hidden>
+ <input type="text" id="product_delivery_charge" name="product_delivery_charge" value="0" required hidden>
+ <input type="text" id="success_url" name="success_url" value="http://127.0.0.1/academy-management-system/esewa_payment_success.php?id=<?php echo $id ?>&" required hidden>
+ <input type="text" id="failure_url" name="failure_url" value="http://127.0.0.1/academy-management-system/esewa_payment_failed.php" required hidden>
+ <input type="text" id="signed_field_names" name="signed_field_names" value="total_amount,transaction_uuid,product_code" required hidden>
+ <input type="text" id="signature" name="signature" value="<?php echo base64_encode($s); ?>" required hidden>
+ <?php
+       if ($dues != 0)
+           echo '<input value="Pay via esewa" type="submit">';
+       else
+           echo '<p>Student fee is cleared</p>
+        ';
+                                     ?>
+ </form>
+</body>
 <?php
                                      }
 
