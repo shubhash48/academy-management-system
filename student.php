@@ -224,7 +224,22 @@ echo $errormsg;
         <?php 
 		 if(isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")
 		 {
-		?>
+		?>   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
+        <script>
+            $(document).ready(function () {
+                // Validate full name field to accept only letters
+                $("sname").on("input", function () {
+                    var regex = /[^a-zA-Z\s]/g; // Regular expression to match anything except letters
+                    if ($(this).val().match(regex)) {
+                        // If the input contains any non-letter characters, show a warning message
+                        $("errormsg").text("Full name must contain only letters.").show();
+                    } else {
+                        // Otherwise, hide the warning message
+                        $("errormsg").hide();
+                    }
+                });
+            });
+        </script>
 		
 			<script type="text/javascript" src="js/validation/jquery.validate.min.js"></script>
                 <div class="row">
@@ -241,27 +256,28 @@ echo $errormsg;
 						<div class="form-group">
 								<label class="col-sm-2 control-label" for="Old">Full Name* </label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="sname" name="sname" value="<?php echo $sname;?>"  />
+									<input type="text" class="form-control" id="sname"required pattern="[A-Za-z\s]+" name="sname" value="<?php echo $sname;?>"  />
+                                    <?php echo $errormsg; ?>
 								</div>
 							</div>
 						<div class="form-group">
 								<label class="col-sm-2 control-label" for="Old">Contact* </label>
 								<div class="col-sm-10">
-									<input type="tel" class="form-control" id="contact" name="contact"  value="<?php echo $contact;?>" minlength="9" maxlength="10" />
+									<input type="tel" class="form-control" id="contact" name="contact" pattern="[0-9]{10}" value="<?php echo $contact;?>" minlength="9" maxlength="10" required />
                                     <?php echo $errormsg; ?>
 								</div>
 							</div>
                             <div class="form-group">
-								<label class="col-sm-2 control-label" for="Old">Address </label>
+								<label class="col-sm-2 control-label" for="Old">Address*</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="address" name="address" value="<?php echo $address;?>"  />
+									<input type="text" class="form-control" id="address" name="address" value="<?php echo $address;?>" required />
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label" for="Old">File Upload </label>
+								<label class="col-sm-2 control-label" for="Old">File Upload*</label>
 								<div class="col-sm-10">
 								
-								<input type="file" class="form-control" name="image" id="image" accept=".jpg, .jpeg, .png"> 
+								<input type="file" class="form-control" name="image" id="image" accept=".jpg, .jpeg, .png"required> 
 									
 								</div>
 						</div>
@@ -269,7 +285,7 @@ echo $errormsg;
 						<div class="form-group">
 								<label class="col-sm-2 control-label" for="Old">Course* </label>
 								<div class="col-sm-10">
-								<select class="form-control" id="course" name="course">
+								<select class="form-control" id="course" name="course"required>
     <option value="">Select Course Level</option>
     <?php
     $sql = "SELECT course FROM course"; // Retrieve only the course name from the "grade" table
@@ -288,15 +304,15 @@ echo $errormsg;
 						{
 						?>
 						<div class="form-group">
-								<label class="col-sm-2 control-label" for="">Username </label>
+								<label class="col-sm-2 control-label" for="">Username* </label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="username" name="username" value="" />
+									<input type="text" class="form-control" id="username" name="username" value="" required/>
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label" for="">password</label>
+								<label class="col-sm-2 control-label" for="">password*</label>
 								<div class="col-sm-10">
-								<input type="password" class="form-control" name="password" pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$" title="Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 8 characters long." id="password" value="" />
+								<input type="password" class="form-control" name="password" id="password" value="" required/>
            
 								</div>
 </div>
@@ -317,7 +333,7 @@ echo $errormsg;
 						<div class="form-group">
 								<label class="col-sm-2 control-label" for="Old">DOJ* </label>
 								<div class="col-sm-10">
-                                <input type="date" class="form-control"  placeholder="Date of Joining" id="joindate"  name="joindate" value="<?php echo  ($joindate!='')?date("Y-m-d", strtotime($joindate)):'';?>" style="background-color: #fff;" max="<?php echo date('Y-m-d'); ?>" readonly />
+                                <input type="date" class="form-control"  placeholder="Date of Joining" id="joindate"  name="joindate" value="<?php echo  ($joindate!='')?date("Y-m-d", strtotime($joindate)):'';?>" style="background-color: #fff;" max="<?php echo date('Y-m-d'); ?>" required />
 								
 								</div>
 							</div>
@@ -330,7 +346,7 @@ echo $errormsg;
 						<div class="form-group">
 								<label class="col-sm-2 control-label" for="Old">Total Fees* </label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="fees" name="fees" value="<?php echo $fees;?>" <?php echo ($action=="update")?"disabled":""; ?>  />
+									<input type="text" class="form-control" id="fees" name="fees" value="<?php echo $fees;?>" <?php echo ($action=="update")?"disabled":""; ?> required />
 								</div>
 						</div>
 						
@@ -339,9 +355,9 @@ echo $errormsg;
 						{
 						?>
 						<div class="form-group">
-								<label class="col-sm-2 control-label" for="Old">Advance Fee* </label>
+								<label class="col-sm-2 control-label" for="Old">Advance Fee </label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="advancefees" name="advancefees" readonly   />
+									<input type="text" class="form-control" id="advancefees" name="advancefees" />
 								</div>
 						</div>
 						<?php
@@ -551,7 +567,7 @@ echo $errormsg;
 
 		
 		$("#fees").keyup( function(){
-		$("#advancefees").val("");
+		$("#advancefees").val("0");
 		$("#balance").val(0);
 		var fee = $.trim($(this).val());
 		if( fee!='' && !isNaN(fee))

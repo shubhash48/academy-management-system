@@ -168,17 +168,11 @@ include("php/header.php");
                 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-head-line">Admin ID Password Creation
-						<?php
-						echo (isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")?
-						' <a href="admin.php" class="btn btn-success btn-sm pull-right" style="border-radius:0%">Go Back </a>':'<a href="admin.php?action=add" class="btn btn-success btn-sm pull-right" style="border-radius:0%">
-						<i class="glyphicon glyphicon-plus"></i> Add New Admin </a>';
-						?>
-						</h1>
-                     
-						<?php
+					
+						
 
-						echo $errormsg;
-						?>
+						
+						
                     </div>
                 </div>
                 <?php 
