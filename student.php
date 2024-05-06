@@ -95,12 +95,17 @@ if (isset($_POST['save']) && $_POST['action'] != 'update') {
                             $existingContact = $conn->query("SELECT * FROM student WHERE contact='$contact'");
                             if ($existingContact->num_rows > 0) {
                                 $errormsg = "<div class='alert alert-danger'>Contact number must not ne same!</div>";
+                            } else {
+                                // Hash the password
+                                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+                                $balance = $fees - $advancefees;
+                                $q1 = $conn->query("INSERT INTO student (sname, joindate, contact, address, image, emailid, course, balance, fees, username, password) VALUES ('$sname','$joindate','$contact', '$address', '$newImageName','$emailid','$course','$balance','$fees','$username','$hashedPassword')");
+                                $sid = $conn->insert_id;
+                                $conn->query("INSERT INTO fees_transaction (stdid, paid, submitdate, transcation_remark) VALUES ('$sid','$advancefees','$joindate','$remark')");
                             }
-                            $balance = $fees - $advancefees;
-                            $q1 = $conn->query("INSERT INTO student (sname, joindate, contact,address, image, emailid, course, balance, fees,username,password) VALUES ('$sname','$joindate','$contact', '$address', '$newImageName','$emailid','$course','$balance','$fees','$username','$password')");
-                            $sid = $conn->insert_id;
-                            $conn->query("INSERT INTO fees_transaction (stdid, paid, submitdate, transcation_remark) VALUES ('$sid','$advancefees','$joindate','$remark')");
                         }
+
 
                         echo '<script type="text/javascript">window.location="student.php?act=1";</script>';
                     }
